@@ -51,4 +51,22 @@ class ItemRESTTest extends TestCase
         $response->assertOk();
         $this->assertEquals($item->id, $response->json()['id']);
     }
+
+    public function test_update_an_item(): void
+    {
+        $item = Item::factory()->create();
+
+        $data = [
+            'name' => fake()->unique()->name,
+            'description' => fake()->sentence()
+        ];
+
+        $response = $this->actingAs($this->admin)->putJson('/api/items/' . $item->id, $data);
+        $response->assertOk();
+
+        $item->refresh();
+
+        $this->assertEquals($response->json()['name'], $data['name']);
+        $this->assertEquals($response->json()['description'], $data['description']);
+    }
 }

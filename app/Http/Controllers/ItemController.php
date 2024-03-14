@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\HttpStatus;
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
 {
@@ -14,7 +15,7 @@ class ItemController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'unique:items'],
-            'decription' => ['sometimes', 'max:255']
+            'description' => ['sometimes', 'max:255']
         ]);
 
         $item = Item::query()->create($data);
@@ -41,5 +42,17 @@ class ItemController extends Controller
                 $item,
                 HttpStatus::OK->value
             );
+    }
+
+    public function update(Request $request, Item $item)
+    {
+        $data = $request->validate([
+            'name' => ['required', Rule::unique('items', 'name')->ignoreModel($item)],
+            'description' => ['sometimes', 'max:255']
+        ]);
+
+        $item->update($data);
+
+        return response()->json($item, HttpStatus::OK->value);
     }
 }
