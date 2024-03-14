@@ -21,6 +21,7 @@ class ItemController extends Controller
 
         return response()->json($item, HttpStatus::CREATED->value);
     }
+
     public function index(Request $request)
     {
         $query = Item::query();
@@ -29,6 +30,15 @@ class ItemController extends Controller
                 [
                     'pagination' => $query->paginate($request->per_page ?? ItemController::PER_PAGE)
                 ],
+                HttpStatus::OK->value
+            );
+    }
+
+    public function find(Request $request, Item $item)
+    {
+        return response()
+            ->json(
+                $item,
                 HttpStatus::OK->value
             );
     }

@@ -42,4 +42,13 @@ class ItemRESTTest extends TestCase
         $response->assertOk();
         $response->assertJsonCount(ItemController::PER_PAGE, 'pagination.data');
     }
+
+    public function test_find_an_item(): void
+    {
+        Item::factory()->count(30)->create();
+        $item = Item::query()->inRandomOrder()->first();
+        $response = $this->getJson('/api/items/' . $item->id);
+        $response->assertOk();
+        $this->assertEquals($item->id, $response->json()['id']);
+    }
 }
