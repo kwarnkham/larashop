@@ -18,7 +18,8 @@ class ItemFactory extends Factory
     {
         return [
             'name' => fake()->unique()->name(),
-            'description' => fake()->sentence()
+            'description' => fake()->sentence(),
+            'price' => fake()->numberBetween(1000, 10000)
         ];
     }
 }

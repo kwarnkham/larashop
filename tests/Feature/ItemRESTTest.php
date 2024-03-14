@@ -25,7 +25,8 @@ class ItemRESTTest extends TestCase
     {
         $data = [
             'name' => fake()->unique()->name,
-            'description' => fake()->sentence()
+            'description' => fake()->sentence(),
+            'price' => fake()->numberBetween(1000, 10000)
         ];
 
         $response = $this->actingAs($this->admin)->postJson('/api/items', $data);
@@ -58,7 +59,8 @@ class ItemRESTTest extends TestCase
 
         $data = [
             'name' => fake()->unique()->name,
-            'description' => fake()->sentence()
+            'description' => fake()->sentence(),
+            'price' => fake()->numberBetween(1000, 10000)
         ];
 
         $response = $this->actingAs($this->admin)->putJson('/api/items/' . $item->id, $data);

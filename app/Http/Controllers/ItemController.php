@@ -15,7 +15,8 @@ class ItemController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'unique:items'],
-            'description' => ['sometimes', 'max:255']
+            'description' => ['sometimes', 'max:255'],
+            'price' => ['required', 'numeric']
         ]);
 
         $item = Item::query()->create($data);
@@ -48,7 +49,8 @@ class ItemController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', Rule::unique('items', 'name')->ignoreModel($item)],
-            'description' => ['sometimes', 'max:255']
+            'description' => ['sometimes', 'max:255'],
+            'price' => ['required', 'numeric']
         ]);
 
         $item->update($data);
