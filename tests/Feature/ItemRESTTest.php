@@ -69,4 +69,13 @@ class ItemRESTTest extends TestCase
         $this->assertEquals($response->json()['name'], $data['name']);
         $this->assertEquals($response->json()['description'], $data['description']);
     }
+
+    public function test_delete_an_item(): void
+    {
+        $item = Item::factory()->create();
+        $response = $this->actingAs($this->admin)->deleteJson('/api/items/' . $item->id);
+        $response->assertNoContent();
+        $this->assertNotNull($item->fresh()->deleted_at);
+        $this->assertDatabaseCount('items', 1);
+    }
 }

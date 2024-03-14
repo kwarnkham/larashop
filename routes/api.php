@@ -16,4 +16,5 @@ Route::controller(ItemController::class)->prefix('items')->group(function () {
     });
     Route::get('', 'index');
     Route::get('{item}', 'find');
+    Route::delete('{item}', 'destroy');
 });

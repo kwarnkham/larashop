@@ -55,4 +55,11 @@ class ItemController extends Controller
 
         return response()->json($item, HttpStatus::OK->value);
     }
+
+    public function destroy(Request $request, Item $item)
+    {
+        $item->delete();
+
+        return response()->json([], HttpStatus::NO_CONTENT->value);
+    }
 }
