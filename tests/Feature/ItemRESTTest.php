@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\ItemController;
 use App\Models\Item;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ItemRESTTest extends TestCase
@@ -33,5 +33,13 @@ class ItemRESTTest extends TestCase
 
         $this->assertEquals($response->json()['name'], $data['name']);
         $this->assertDatabaseCount('items', 1);
+    }
+
+    public function test_list_items(): void
+    {
+        Item::factory()->count(30)->create();
+        $response = $this->getJson('/api/items');
+        $response->assertOk();
+        $response->assertJsonCount(ItemController::PER_PAGE, 'pagination.data');
     }
 }

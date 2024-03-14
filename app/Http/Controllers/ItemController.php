@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
+    const PER_PAGE = 20;
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -18,5 +20,16 @@ class ItemController extends Controller
         $item = Item::query()->create($data);
 
         return response()->json($item, HttpStatus::CREATED->value);
+    }
+    public function index(Request $request)
+    {
+        $query = Item::query();
+        return response()
+            ->json(
+                [
+                    'pagination' => $query->paginate($request->per_page ?? ItemController::PER_PAGE)
+                ],
+                HttpStatus::OK->value
+            );
     }
 }

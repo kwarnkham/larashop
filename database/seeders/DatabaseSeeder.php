@@ -36,8 +36,8 @@ class DatabaseSeeder extends Seeder
 
         DB::table('role_user')->insert([
             [
-                'user_id' => '1',
-                'role_id' => '1',
+                'user_id' => DB::table('users')->first()->id,
+                'role_id' => DB::table('roles')->first()->id,
                 'created_at' => $now,
                 'updated_at' => $now
             ]
