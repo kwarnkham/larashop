@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
+use App\Enums\ItemStatus;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -51,7 +52,7 @@ class ItemController extends Controller
             'name' => ['required', Rule::unique('items', 'name')->ignoreModel($item)],
             'description' => ['sometimes', 'max:255'],
             'price' => ['required', 'numeric'],
-            'status' => ['required', Rule::in(['active', 'inactive'])]
+            'status' => ['required', Rule::in(ItemStatus::all())]
         ]);
 
         $item->update($data);
