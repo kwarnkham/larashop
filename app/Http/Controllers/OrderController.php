@@ -67,4 +67,9 @@ class OrderController extends Controller
                 HttpStatus::OK->value
             );
     }
+
+    public function find(Request $request, Order $order)
+    {
+        return response()->json($order);
+    }
 }

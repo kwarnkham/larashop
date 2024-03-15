@@ -70,12 +70,16 @@ class OrderRESTTest extends TestCase
         $response->assertJsonCount(OrderController::PER_PAGE, 'pagination.data');
     }
 
-    // public function test_find_an_item(): void
-    // {
-    //     Item::factory()->count(30)->create();
-    //     $item = Item::query()->inRandomOrder()->first();
-    //     $response = $this->getJson('/api/items/' . $item->id);
-    //     $response->assertOk();
-    //     $this->assertEquals($item->id, $response->json()['id']);
-    // }
+    public function test_find_an_order(): void
+    {
+        Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->count(30)->create(['user_id' => $this->user->id]);
+
+        $order = Order::query()->inRandomOrder()->first();
+        $response = $this->getJson('/api/orders/' . $order->id);
+        $response->assertOk();
+        $this->assertEquals($order->id, $response->json()['id']);
+    }
 }
