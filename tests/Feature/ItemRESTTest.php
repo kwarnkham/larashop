@@ -18,7 +18,7 @@ class ItemRESTTest extends TestCase
     {
         parent::setUp();
         $this->seed();
-        $this->admin = User::first();
+        $this->admin = User::query()->whereRelation('roles', 'name', 'admin')->first();
     }
 
     public function test_create_an_item(): void

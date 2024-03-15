@@ -77,6 +77,8 @@ class OrderController extends Controller
 
     public function update(Request $request, Order $order)
     {
+        abort_unless($request->user()->hasRole('admin'), HttpStatus::FORBIDDEN->value);
+
         $data = $request->validate([
             'status' => [
                 'required',

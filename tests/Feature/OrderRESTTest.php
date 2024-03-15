@@ -16,11 +16,13 @@ class OrderRESTTest extends TestCase
     use RefreshDatabase;
 
     private $user;
+    private $admin;
 
     public function setUp(): void
     {
         parent::setUp();
-
+        $this->seed();
+        $this->admin = User::query()->whereRelation('roles', 'name', 'admin')->first();
         $this->user = User::factory()->create();
     }
 
@@ -94,7 +96,7 @@ class OrderRESTTest extends TestCase
             'status' => 'confirmed'
         ];
 
-        $response = $this->actingAs($this->user)->putJson('/api/orders/' . $order->id, $data);
+        $response = $this->actingAs($this->admin)->putJson('/api/orders/' . $order->id, $data);
         $response->assertOk();
 
         $order->refresh();
