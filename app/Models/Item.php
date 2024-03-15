@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Item extends BaseModel
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 }
