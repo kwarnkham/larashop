@@ -60,7 +60,8 @@ class ItemRESTTest extends TestCase
         $data = [
             'name' => fake()->unique()->name,
             'description' => fake()->sentence(),
-            'price' => fake()->numberBetween(1000, 10000)
+            'price' => fake()->numberBetween(1000, 10000),
+            'status' => 'inactive'
         ];
 
         $response = $this->actingAs($this->admin)->putJson('/api/items/' . $item->id, $data);

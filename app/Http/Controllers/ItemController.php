@@ -50,7 +50,8 @@ class ItemController extends Controller
         $data = $request->validate([
             'name' => ['required', Rule::unique('items', 'name')->ignoreModel($item)],
             'description' => ['sometimes', 'max:255'],
-            'price' => ['required', 'numeric']
+            'price' => ['required', 'numeric'],
+            'status' => ['required', Rule::in(['active', 'inactive'])]
         ]);
 
         $item->update($data);
