@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+
+    const PER_PAGE = 20;
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -50,5 +53,18 @@ class OrderController extends Controller
         );
 
         return response()->json($order, HttpStatus::CREATED->value);
+    }
+
+    public function index(Request $request)
+    {
+        $query = Order::query();
+
+        return response()
+            ->json(
+                [
+                    'pagination' => $query->paginate($request->per_page ?? OrderController::PER_PAGE)
+                ],
+                HttpStatus::OK->value
+            );
     }
 }
