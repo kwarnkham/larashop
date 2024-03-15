@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends BaseModel
@@ -16,8 +17,22 @@ class Order extends BaseModel
         ];
     }
 
+    public function amount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->items()->sum('item_order.price')
+        );
+    }
+
     public function items()
     {
-        return $this->belongsToMany(Item::class)->using(ItemOrder::class);
+        return $this->belongsToMany(Item::class)
+            ->using(ItemOrder::class)
+            ->withPivot(['price', 'quantity']);
+    }
+
+    public function payment()
+    {
+        return $this->morphOne(Payment::class, 'payable');
     }
 }

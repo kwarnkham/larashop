@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,4 +28,10 @@ Route::controller(OrderController::class)->prefix('orders')->group(function () {
     });
     Route::get('', 'index');
     Route::get('{order}', 'find');
+});
+
+Route::controller(PaymentController::class)->prefix('payments')->group(function () {
+    Route::middleware([Authenticate::using('sanctum')])->group(function () {
+        Route::post('', 'store');
+    });
 });
