@@ -6,6 +6,7 @@ use App\Enums\HttpStatus;
 use App\Models\Item;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -70,6 +71,20 @@ class OrderController extends Controller
 
     public function find(Request $request, Order $order)
     {
+        return response()->json($order);
+    }
+
+    public function update(Request $request, Order $order)
+    {
+        $data = $request->validate([
+            'status' => [
+                'required',
+                Rule::in(['pending', 'confirmed', 'paid', 'completed', 'canceled'])
+            ]
+        ]);
+
+        $order->update($data);
+
         return response()->json($order);
     }
 }

@@ -82,4 +82,23 @@ class OrderRESTTest extends TestCase
         $response->assertOk();
         $this->assertEquals($order->id, $response->json()['id']);
     }
+
+    public function test_update_an_order_status(): void
+    {
+        $order = Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->create(['user_id' => $this->user->id]);
+
+        $data = [
+            'status' => 'confirmed'
+        ];
+
+        $response = $this->actingAs($this->user)->putJson('/api/orders/' . $order->id, $data);
+        $response->assertOk();
+
+        $order->refresh();
+
+        $this->assertEquals($response->json()['status'], $data['status']);
+    }
 }

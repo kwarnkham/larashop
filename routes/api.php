@@ -23,6 +23,7 @@ Route::controller(ItemController::class)->prefix('items')->group(function () {
 Route::controller(OrderController::class)->prefix('orders')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
         Route::post('', 'store');
+        Route::put('{order}', 'update');
     });
     Route::get('', 'index');
     Route::get('{order}', 'find');
