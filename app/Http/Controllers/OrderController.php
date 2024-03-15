@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
+use App\Enums\OrderStatus;
 use App\Models\Item;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -79,7 +80,7 @@ class OrderController extends Controller
         $data = $request->validate([
             'status' => [
                 'required',
-                Rule::in(['pending', 'confirmed', 'paid', 'completed', 'canceled'])
+                Rule::in(OrderStatus::all())
             ]
         ]);
 
