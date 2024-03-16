@@ -24,6 +24,7 @@ return new class extends Migration
             )->default(PaymentStatus::Pending->value);
             $table->double('amount');
             $table->jsonb('result')->nullable();
+            $table->string('pay_url')->nullable();
             $table->timestamps();
         });
     }
