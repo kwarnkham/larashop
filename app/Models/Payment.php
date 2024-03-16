@@ -31,7 +31,7 @@ class Payment extends BaseModel
                     ProcessPayment::dispatch(
                         Larapay::mockResponse($payment),
                         $payment->id
-                    )->delay(10);
+                    );
                 }
             }
         });

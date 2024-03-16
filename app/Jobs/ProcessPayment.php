@@ -17,7 +17,7 @@ class ProcessPayment implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public $paymentResponse, public $paymentId)
+    public function __construct(public string $paymentResponse, public int $paymentId)
     {
         //
     }

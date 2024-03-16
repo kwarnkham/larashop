@@ -9,6 +9,9 @@ use Str;
 
 class Larapay implements PaymentService
 {
+    //mocking key, should comes from config set in env file
+    const KEY = PaymentType::Larapay->value;
+
     public function __construct(public array $data)
     {
     }
@@ -23,8 +26,7 @@ class Larapay implements PaymentService
             'status' => 1,
         ];
         ksort($data);
-        $key = PaymentType::Larapay->value;
-        $sign = md5(http_build_query($data) . "&key={$key}");
+        $sign = md5(http_build_query($data) . "&key=" . static::KEY);
         $data['sign'] = $sign;
         return json_encode($data);
     }
@@ -47,9 +49,7 @@ class Larapay implements PaymentService
     {
         $data = array_filter($this->data, fn ($key) => $key != 'sign', ARRAY_FILTER_USE_KEY);
         ksort($data);
-        //mocking key
-        $key = PaymentType::Larapay->value;
-        $sign = md5(http_build_query($data) . "&key={$key}");
+        $sign = md5(http_build_query($data) . "&key=" . static::KEY);
         return $sign == $this->data['sign'];
     }
 }
