@@ -8,7 +8,6 @@ use App\Jobs\ProcessPayment;
 use App\Services\Larapay;
 use App\Services\PaymentService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Str;
 
 class Payment extends BaseModel
 {
@@ -29,19 +28,10 @@ class Payment extends BaseModel
             $payment->refresh();
             if ($payment->status === PaymentStatus::Pending) {
                 if ($payment->type === PaymentType::Larapay) {
-                    // mocking payment response from callback
-                    $data = [
-                        'reference_id' => $payment->id,
-                        'id' => time() . Str::random(6),
-                        'amount' => $payment->amount,
-                        'paid_at' =>  time() * 1000,
-                        'status' => 1,
-                    ];
-                    ksort($data);
-                    $key = PaymentType::Larapay->value;
-                    $sign = md5(http_build_query($data) . "&key={$key}");
-                    $data['sign'] = $sign;
-                    ProcessPayment::dispatch(json_encode($data), $payment->id)->delay(10);
+                    ProcessPayment::dispatch(
+                        Larapay::mockResponse($payment),
+                        $payment->id
+                    )->delay(10);
                 }
             }
         });

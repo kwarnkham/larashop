@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\PaymentType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'type' => PaymentType::Larapay,
+            'amount' => fake()->numberBetween(1000, 100000)
         ];
     }
 }

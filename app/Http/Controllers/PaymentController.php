@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\HttpStatus;
 use App\Enums\PaymentType;
 use App\Models\Order;
-use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
