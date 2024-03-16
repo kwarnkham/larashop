@@ -26,13 +26,9 @@ class Payment extends BaseModel
     {
         static::created(function (Payment $payment) {
             $payment->refresh();
-            if ($payment->status === PaymentStatus::Pending) {
-                if ($payment->type === PaymentType::Larapay) {
-                    ProcessPayment::dispatch(
-                        Larapay::mockResponse($payment),
-                        $payment->id
-                    );
-                }
+            //mocking responding to payment service callback to /api/payment-services/{payment}
+            if ($payment->type === PaymentType::Larapay) {
+                $payment->handlePaymentServiceResponse(Larapay::mockResponse($payment));
             }
         });
     }
@@ -42,10 +38,24 @@ class Payment extends BaseModel
         return $this->morphTo();
     }
 
-    public function getService($data): PaymentService
+    public function getService(array $data): PaymentService
     {
         if ($this->type == PaymentType::Larapay) {
-            return new Larapay($data);
+            $valid = array_key_exists('reference_id', $data)
+                && array_key_exists('id', $data)
+                && array_key_exists('amount', $data)
+                && array_key_exists('status', $data)
+                && array_key_exists('sign', $data)
+                && array_key_exists('paid_at', $data);
+            if (!$valid) return null;
+            return new Larapay(
+                referenceId: $data['reference_id'],
+                id: $data['id'],
+                amount: $data['amount'],
+                status: $data['status'],
+                sign: $data['sign'],
+                paidAt: $data['paid_at']
+            );
         }
     }
 
@@ -53,10 +63,26 @@ class Payment extends BaseModel
     {
         $data = json_decode($paymentResponse, associative: true);
         $paymentService = $this->getService($data);
+        if (!$paymentService) return false;
         if (!$paymentService->verifySign()) return false;
         return $this->update([
             'result' => $data,
             'status' => $paymentService->getStatus()
         ]);
+    }
+
+    public function handlePaymentServiceResponse(string $paymentServiceResponse)
+    {
+        if ($this->status === PaymentStatus::Pending) {
+            ProcessPayment::dispatch(
+                $paymentServiceResponse,
+                $this->id
+            );
+        } else {
+            // payment services usually recommend you to return a signal to confirm that you have handled the request so that they can stop hitting this controller again
+
+            // assuming we handled the response successfully if the status is not pending
+            return 'SUCCESS';
+        }
     }
 }

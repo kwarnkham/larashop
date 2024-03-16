@@ -12,8 +12,14 @@ class Larapay implements PaymentService
     //mocking key, should comes from config set in env file
     const KEY = PaymentType::Larapay->value;
 
-    public function __construct(public array $data)
-    {
+    public function __construct(
+        public $referenceId,
+        public $id,
+        public $amount,
+        public $paidAt,
+        public $status,
+        public $sign
+    ) {
     }
 
     public static function mockResponse(Payment $payment): string
@@ -33,7 +39,7 @@ class Larapay implements PaymentService
 
     public function getStatus(): PaymentStatus
     {
-        switch ($this->data['status']) {
+        switch ($this->status) {
             case 1:
                 return PaymentStatus::Completed;
             case 2:
@@ -47,9 +53,15 @@ class Larapay implements PaymentService
 
     public function verifySign(): bool
     {
-        $data = array_filter($this->data, fn ($key) => $key != 'sign', ARRAY_FILTER_USE_KEY);
+        $data = [
+            'reference_id' => $this->referenceId,
+            'id' => $this->id,
+            'amount' => $this->amount,
+            'paid_at' =>  $this->paidAt,
+            'status' => $this->status,
+        ];
         ksort($data);
         $sign = md5(http_build_query($data) . "&key=" . static::KEY);
-        return $sign == $this->data['sign'];
+        return $sign == $this->sign;
     }
 }
