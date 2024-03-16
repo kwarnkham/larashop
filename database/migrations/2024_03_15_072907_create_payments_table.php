@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('payable_id');
             $table->string('payable_type');
-            $table->enum('type', ['larapay'])->default(PaymentType::Larapay->value);
+            $table->enum('type', ['larapay']);
             $table->enum(
                 'status',
                 ['pending', 'processing', 'completed', 'canceled']
