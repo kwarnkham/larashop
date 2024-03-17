@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
@@ -14,6 +15,13 @@ Route::get('/user', function (Request $request) {
 
 
 Route::any('/payment-services/{payment}', [PaymentServiceController::class, 'handle']);
+
+
+Route::controller(AuthController::class)->prefix('auth')->group(function () {
+    Route::middleware([Authenticate::using('sanctum')])->group(function () {
+    });
+    Route::post('register', 'register');
+});
 
 Route::controller(ItemController::class)->prefix('items')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
