@@ -6,6 +6,8 @@ use App\Jobs\SendEmailVerificationCode;
 use App\Jobs\SendPasswordResetCode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Queue;
 use Tests\TestCase;
 
@@ -40,6 +42,7 @@ class AuthTest extends TestCase
         ]);
         $response->assertNoContent();
         $this->assertTrue($this->user->fresh()->hasVerifiedEmail());
+        $this->assertFalse(Cache::has($this->user->id . 'email_verification_code'));
     }
 
     public function test_regsiter_a_user(): void
@@ -126,5 +129,23 @@ class AuthTest extends TestCase
 
         $response->assertNoContent();
         Queue::assertPushed(SendPasswordResetCode::class);
+    }
+
+    public function test_user_reset_password()
+    {
+        $code = $this->user->getPasswordResetCode();
+
+        $password = 'password_reset';
+
+        $response = $this->postJson('api/auth/reset-password', [
+            'code' => $code,
+            'email' => $this->user->email,
+            'password' => $password,
+            'password_confirmation' => $password
+        ]);
+
+        $response->assertNoContent();
+        $this->assertTrue(Hash::check($password, $this->user->fresh()->password));
+        $this->assertFalse(Cache::has($this->user . '.password_reset_code'));
     }
 }

@@ -29,6 +29,29 @@ class AuthController extends Controller
         ], HttpStatus::CREATED->value);
     }
 
+    public function resetPassword(Request $request)
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'exists:users,email'],
+            'code' => ['required', 'numeric'],
+            'password' => ['required', 'confirmed']
+        ]);
+
+        $user = User::query()->where('email', $data['email'])->first();
+
+        abort_unless(
+            $user->verifyResetPasswordCode($data['code']),
+            HttpStatus::BAD_REQUEST->value,
+            'Wrong code'
+        );
+
+        $user->update(['password' => bcrypt($data['password'])]);
+
+        return response()->json([], HttpStatus::NO_CONTENT->value);
+    }
+
+
+
     public function forgetPassword(Request $request)
     {
         $data = $request->validate([
