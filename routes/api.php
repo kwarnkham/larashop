@@ -24,6 +24,7 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     });
     Route::post('register', 'register');
     Route::post('login', 'login');
+    Route::post('forget-password', 'forgetPassword');
 });
 
 Route::controller(ItemController::class)->prefix('items')->group(function () {

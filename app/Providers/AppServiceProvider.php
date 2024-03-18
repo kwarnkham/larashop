@@ -28,7 +28,8 @@ class AppServiceProvider extends ServiceProvider
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             return (new MailMessage)
                 ->subject('Verify Email Address')
-                ->line("Your code for email verification is '{$notifiable->getEmailVerificationCode()}'. The code is valid for only 1 minute.");
+                ->line("Your code for email verification is '{$notifiable->getEmailVerificationCode()}'.")
+                ->line(" The code is valid for only 1 minute.");
         });
     }
 }

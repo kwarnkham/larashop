@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Jobs\SendEmailVerificationCode;
+use App\Jobs\SendPasswordResetCode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Queue;
@@ -114,5 +115,16 @@ class AuthTest extends TestCase
 
         $response->assertNoContent();
         $this->assertDatabaseCount('personal_access_tokens', 1);
+    }
+
+    public function test_user_request_to_reset_password()
+    {
+        Queue::fake(SendPasswordResetCode::class);
+        $response = $this->postJson('api/auth/forget-password', [
+            'email' => $this->user->email
+        ]);
+
+        $response->assertNoContent();
+        Queue::assertPushed(SendPasswordResetCode::class);
     }
 }
