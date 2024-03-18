@@ -54,6 +54,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function refreshEmailVerificationCode()
     {
-        Cache::forget($this->user . ".email_verification_code");
+        return Cache::forget($this->user . ".email_verification_code");
+    }
+
+    public function verifyEmailViaCode(string $code): bool
+    {
+        if ($code != $this->getEmailVerificationCode()) return false;
+        return $this->refreshEmailVerificationCode();
     }
 }

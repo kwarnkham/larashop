@@ -20,6 +20,7 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
         Route::post('change-password', 'changePassword');
         Route::post('email-verification', 'emailVerification')->middleware(['throttle:1,1']);
+        Route::post('verify-email', 'verifyEmail');
     });
     Route::post('register', 'register');
     Route::post('login', 'login');

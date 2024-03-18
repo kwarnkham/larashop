@@ -10,7 +10,7 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+    /** @var \Illuminate\Contracts\Auth\Authenticatable|\App\Models\User $user */
     private User $user;
 
     public function setUp(): void
@@ -24,6 +24,17 @@ class AuthTest extends TestCase
     {
         $response = $this->actingAs($this->user)->postJson('api/auth/email-verification');
         $response->assertNoContent();
+    }
+
+    public function test_verify_email()
+    {
+        $this->withExceptionHandling();
+        $code = $this->user->getEmailVerificationCode();
+        $response = $this->actingAs($this->user)->postJson('api/auth/verify-email', [
+            'code' => $code
+        ]);
+        $response->assertNoContent();
+        $this->assertTrue($this->user->fresh()->hasVerifiedEmail());
     }
 
     public function test_regsiter_a_user(): void
