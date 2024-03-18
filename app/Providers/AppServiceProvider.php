@@ -22,13 +22,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         VerifyEmail::createUrlUsing(function (object $notifiable) {
-            return $notifiable->getEmailVerificationCode();
+            return '';
         });
 
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             return (new MailMessage)
                 ->subject('Verify Email Address')
-                ->line("Your code for email verification is '$url'. The code is valid for only 1 minute.");
+                ->line("Your code for email verification is '{$notifiable->getEmailVerificationCode()}'. The code is valid for only 1 minute.");
         });
     }
 }

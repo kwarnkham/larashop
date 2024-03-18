@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\SendEmailVerificationCode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Queue;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -22,8 +24,10 @@ class AuthTest extends TestCase
 
     public function test_request_email_verification()
     {
+        Queue::fake([SendEmailVerificationCode::class]);
         $response = $this->actingAs($this->user)->postJson('api/auth/email-verification');
         $response->assertNoContent();
+        Queue::assertPushed(SendEmailVerificationCode::class);
     }
 
     public function test_verify_email()

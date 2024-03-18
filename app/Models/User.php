@@ -41,7 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getEmailVerificationCode()
     {
-        return Cache::remember($this->user . ".email_verification_code", 60, function () {
+        return Cache::remember($this->id . ".email_verification_code", 60, function () {
             $codeLength = 6;
             $code = '';
 
@@ -54,7 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function refreshEmailVerificationCode()
     {
-        return Cache::forget($this->user . ".email_verification_code");
+        return Cache::forget($this->id . ".email_verification_code");
     }
 
     public function verifyEmailViaCode(string $code): bool

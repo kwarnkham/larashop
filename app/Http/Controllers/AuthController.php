@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
+use App\Jobs\SendEmailVerificationCode;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -80,10 +81,7 @@ class AuthController extends Controller
 
     public function emailVerification(Request $request)
     {
-        $user = $request->user();
-        $user->refreshEmailVerificationCode();
-        $user->sendEmailVerificationNotification();
-
+        SendEmailVerificationCode::dispatch($request->user());
         return response()->json([], HttpStatus::NO_CONTENT->value);
     }
 
