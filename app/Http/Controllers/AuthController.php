@@ -34,7 +34,7 @@ class AuthController extends Controller
         $data = $request->validate([
             'email' => ['required', 'email', 'exists:users,email'],
             'code' => ['required', 'numeric'],
-            'password' => ['required', 'confirmed']
+            'password' => ['required', 'confirmed'],
         ]);
 
         $user = User::query()->where('email', $data['email'])->first();
@@ -50,12 +50,10 @@ class AuthController extends Controller
         return response()->json([], HttpStatus::NO_CONTENT->value);
     }
 
-
-
     public function forgetPassword(Request $request)
     {
         $data = $request->validate([
-            'email' => ['required', 'email', 'exists:users,email']
+            'email' => ['required', 'email', 'exists:users,email'],
         ]);
 
         $user = User::query()->where('email', $data['email'])->first();
@@ -93,7 +91,7 @@ class AuthController extends Controller
         $data = $request->validate([
             'password' => ['required'],
             'new_password' => ['required', 'confirmed'],
-            'logout_all_other_devices' => ['sometimes', 'boolean']
+            'logout_all_other_devices' => ['sometimes', 'boolean'],
         ]);
 
         $user = $request->user();
@@ -103,7 +101,6 @@ class AuthController extends Controller
             HttpStatus::FORBIDDEN->value,
             'Current password is incorrect'
         );
-
 
         $user->update(['password', $data['password']]);
 
@@ -118,13 +115,14 @@ class AuthController extends Controller
     public function emailVerification(Request $request)
     {
         SendEmailVerificationCode::dispatch($request->user());
+
         return response()->json([], HttpStatus::NO_CONTENT->value);
     }
 
     public function verifyEmail(Request $request)
     {
         $data = $request->validate([
-            'code' => ['required', 'numeric']
+            'code' => ['required', 'numeric'],
         ]);
 
         abort_unless(

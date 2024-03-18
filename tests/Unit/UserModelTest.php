@@ -3,8 +3,10 @@
 namespace Tests\Unit;
 
 use App\Models\User;
+use App\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
+use Notification;
 use Tests\TestCase;
 
 class UserModelTest extends TestCase
@@ -13,9 +15,29 @@ class UserModelTest extends TestCase
 
     public function test_method_sendEmailVerificationNotification(): void
     {
+        Notification::fake();
+
         $user = User::factory()->create();
-        $user->refreshEmailVerificationCode();
         $user->sendEmailVerificationNotification();
-        $this->assertTrue(Cache::has($user->id . ".email_verification_code"));
+
+        Notification::assertSentTo(
+            [$user],
+            VerifyEmail::class
+        );
+        Notification::assertCount(1);
+    }
+
+    public function test_method_sendPasswordResetCode()
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+        $user->sendPasswordResetCode();
+
+        Notification::assertSentTo(
+            [$user],
+            ResetPassword::class
+        );
+        Notification::assertCount(1);
     }
 }

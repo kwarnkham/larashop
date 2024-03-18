@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
             return (new MailMessage)
                 ->subject('Verify Email Address')
                 ->line("Your code for email verification is '{$notifiable->getEmailVerificationCode()}'.")
-                ->line(" The code is valid for only 1 minute.");
+                ->line(' The code is valid for only 1 minute.');
         });
     }
 }

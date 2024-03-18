@@ -15,7 +15,7 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @var \Illuminate\Contracts\Auth\Authenticatable|\App\Models\User $user */
+    /** @var \Illuminate\Contracts\Auth\Authenticatable|\App\Models\User */
     private User $user;
 
     public function setUp(): void
@@ -38,11 +38,11 @@ class AuthTest extends TestCase
         $this->withExceptionHandling();
         $code = $this->user->getEmailVerificationCode();
         $response = $this->actingAs($this->user)->postJson('api/auth/verify-email', [
-            'code' => $code
+            'code' => $code,
         ]);
         $response->assertNoContent();
         $this->assertTrue($this->user->fresh()->hasVerifiedEmail());
-        $this->assertFalse(Cache::has($this->user->id . 'email_verification_code'));
+        $this->assertFalse(Cache::has($this->user->id.'email_verification_code'));
     }
 
     public function test_regsiter_a_user(): void
@@ -102,7 +102,7 @@ class AuthTest extends TestCase
         $response = $this->actingAs($user)->postJson('/api/auth/change-password', [
             'password' => 'wrong_password',
             'new_password' => $newPassword,
-            'new_password_confirmation' => $newPassword
+            'new_password_confirmation' => $newPassword,
         ]);
 
         $response->assertForbidden();
@@ -111,7 +111,7 @@ class AuthTest extends TestCase
             'password' => $password,
             'new_password' => $newPassword,
             'new_password_confirmation' => $newPassword,
-            'logout_all_other_devices' => true
+            'logout_all_other_devices' => true,
         ], headers: [
             'Authorization' => "Bearer $token",
         ]);
@@ -124,7 +124,7 @@ class AuthTest extends TestCase
     {
         Queue::fake(SendPasswordResetCode::class);
         $response = $this->postJson('api/auth/forget-password', [
-            'email' => $this->user->email
+            'email' => $this->user->email,
         ]);
 
         $response->assertNoContent();
@@ -141,11 +141,11 @@ class AuthTest extends TestCase
             'code' => $code,
             'email' => $this->user->email,
             'password' => $password,
-            'password_confirmation' => $password
+            'password_confirmation' => $password,
         ]);
 
         $response->assertNoContent();
         $this->assertTrue(Hash::check($password, $this->user->fresh()->password));
-        $this->assertFalse(Cache::has($this->user . '.password_reset_code'));
+        $this->assertFalse(Cache::has($this->user.'.password_reset_code'));
     }
 }
