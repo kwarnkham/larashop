@@ -19,7 +19,7 @@ class PaymentFactory extends Factory
     {
         return [
             'type' => PaymentType::Larapay,
-            'amount' => fake()->numberBetween(1000, 100000)
+            'amount' => fake()->numberBetween(1000, 100000),
         ];
     }
 }

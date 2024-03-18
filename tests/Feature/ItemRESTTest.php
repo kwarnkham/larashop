@@ -26,7 +26,7 @@ class ItemRESTTest extends TestCase
         $data = [
             'name' => fake()->unique()->name,
             'description' => fake()->sentence(),
-            'price' => fake()->numberBetween(1000, 10000)
+            'price' => fake()->numberBetween(1000, 10000),
         ];
 
         $response = $this->actingAs($this->admin)->postJson('/api/items', $data);
@@ -48,7 +48,7 @@ class ItemRESTTest extends TestCase
     {
         Item::factory()->count(30)->create();
         $item = Item::query()->inRandomOrder()->first();
-        $response = $this->getJson('/api/items/' . $item->id);
+        $response = $this->getJson('/api/items/'.$item->id);
         $response->assertOk();
         $this->assertEquals($item->id, $response->json()['id']);
     }
@@ -61,10 +61,10 @@ class ItemRESTTest extends TestCase
             'name' => fake()->unique()->name,
             'description' => fake()->sentence(),
             'price' => fake()->numberBetween(1000, 10000),
-            'status' => 'inactive'
+            'status' => 'inactive',
         ];
 
-        $response = $this->actingAs($this->admin)->putJson('/api/items/' . $item->id, $data);
+        $response = $this->actingAs($this->admin)->putJson('/api/items/'.$item->id, $data);
         $response->assertOk();
 
         $item->refresh();
@@ -76,7 +76,7 @@ class ItemRESTTest extends TestCase
     public function test_delete_an_item(): void
     {
         $item = Item::factory()->create();
-        $response = $this->actingAs($this->admin)->deleteJson('/api/items/' . $item->id);
+        $response = $this->actingAs($this->admin)->deleteJson('/api/items/'.$item->id);
         $response->assertNoContent();
         $this->assertNotNull($item->fresh()->deleted_at);
         $this->assertDatabaseCount('items', 1);

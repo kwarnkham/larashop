@@ -12,10 +12,10 @@ use Tests\TestCase;
 
 class OrderRESTTest extends TestCase
 {
-
     use RefreshDatabase;
 
     private $user;
+
     private $admin;
 
     public function setUp(): void
@@ -30,10 +30,10 @@ class OrderRESTTest extends TestCase
     {
         $items = Item::factory()->count(10)->create();
 
-        $data =  [
+        $data = [
             'items' => $items->map(
                 fn ($item) => ['id' => $item->id, 'quantity' => fake()->numberBetween(1, 5)]
-            )
+            ),
         ];
 
         $response = $this->actingAs($this->user)->postJson('api/orders', $data);
@@ -80,7 +80,7 @@ class OrderRESTTest extends TestCase
         )->count(30)->create(['user_id' => $this->user->id]);
 
         $order = Order::query()->inRandomOrder()->first();
-        $response = $this->getJson('/api/orders/' . $order->id);
+        $response = $this->getJson('/api/orders/'.$order->id);
         $response->assertOk();
         $this->assertEquals($order->id, $response->json()['id']);
     }
@@ -93,10 +93,10 @@ class OrderRESTTest extends TestCase
         )->create(['user_id' => $this->user->id]);
 
         $data = [
-            'status' => 'confirmed'
+            'status' => 'confirmed',
         ];
 
-        $response = $this->actingAs($this->admin)->putJson('/api/orders/' . $order->id, $data);
+        $response = $this->actingAs($this->admin)->putJson('/api/orders/'.$order->id, $data);
         $response->assertOk();
 
         $order->refresh();

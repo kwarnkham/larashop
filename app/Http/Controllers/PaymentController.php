@@ -14,7 +14,7 @@ class PaymentController extends Controller
     {
         $data = $request->validate([
             'order_id' => ['required', 'exists:orders,id'],
-            'type' => ['required', Rule::in(PaymentType::all())]
+            'type' => ['required', Rule::in(PaymentType::all())],
         ]);
 
         $order = Order::query()->find($data['order_id']);

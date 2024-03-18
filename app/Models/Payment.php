@@ -18,7 +18,7 @@ class Payment extends BaseModel
         return [
             'status' => PaymentStatus::class,
             'type' => PaymentType::class,
-            'result' => 'array'
+            'result' => 'array',
         ];
     }
 
@@ -47,7 +47,10 @@ class Payment extends BaseModel
                 && array_key_exists('status', $data)
                 && array_key_exists('sign', $data)
                 && array_key_exists('paid_at', $data);
-            if (!$valid) return null;
+            if (! $valid) {
+                return null;
+            }
+
             return new Larapay(
                 referenceId: $data['reference_id'],
                 id: $data['id'],
@@ -63,11 +66,16 @@ class Payment extends BaseModel
     {
         $data = json_decode($paymentResponse, associative: true);
         $paymentService = $this->getService($data);
-        if (!$paymentService) return false;
-        if (!$paymentService->verifySign()) return false;
+        if (! $paymentService) {
+            return false;
+        }
+        if (! $paymentService->verifySign()) {
+            return false;
+        }
+
         return $this->update([
             'result' => $data,
-            'status' => $paymentService->getStatus()
+            'status' => $paymentService->getStatus(),
         ]);
     }
 

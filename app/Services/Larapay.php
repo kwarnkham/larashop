@@ -26,14 +26,15 @@ class Larapay implements PaymentService
     {
         $data = [
             'reference_id' => $payment->id,
-            'id' => time() . Str::random(6),
+            'id' => time().Str::random(6),
             'amount' => $payment->amount,
-            'paid_at' =>  time() * 1000,
+            'paid_at' => time() * 1000,
             'status' => 1,
         ];
         ksort($data);
-        $sign = md5(http_build_query($data) . "&key=" . static::KEY);
+        $sign = md5(http_build_query($data).'&key='.static::KEY);
         $data['sign'] = $sign;
+
         return json_encode($data);
     }
 
@@ -57,11 +58,12 @@ class Larapay implements PaymentService
             'reference_id' => $this->referenceId,
             'id' => $this->id,
             'amount' => $this->amount,
-            'paid_at' =>  $this->paidAt,
+            'paid_at' => $this->paidAt,
             'status' => $this->status,
         ];
         ksort($data);
-        $sign = md5(http_build_query($data) . "&key=" . static::KEY);
+        $sign = md5(http_build_query($data).'&key='.static::KEY);
+
         return $sign == $this->sign;
     }
 }

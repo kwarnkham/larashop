@@ -59,6 +59,9 @@
         ],
         "test": [
             "@php artisan test --compact --stop-on-defect"
+        ],
+        "pint": [
+            "./vendor/bin/pint"
         ]
     },
     "extra": {

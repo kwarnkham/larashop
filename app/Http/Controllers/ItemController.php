@@ -17,7 +17,7 @@ class ItemController extends Controller
         $data = $request->validate([
             'name' => ['required', 'unique:items'],
             'description' => ['sometimes', 'max:255'],
-            'price' => ['required', 'numeric']
+            'price' => ['required', 'numeric'],
         ]);
 
         $item = Item::query()->create($data);
@@ -28,10 +28,11 @@ class ItemController extends Controller
     public function index(Request $request)
     {
         $query = Item::query();
+
         return response()
             ->json(
                 [
-                    'pagination' => $query->paginate($request->per_page ?? ItemController::PER_PAGE)
+                    'pagination' => $query->paginate($request->per_page ?? ItemController::PER_PAGE),
                 ],
                 HttpStatus::OK->value
             );
@@ -52,7 +53,7 @@ class ItemController extends Controller
             'name' => ['required', Rule::unique('items', 'name')->ignoreModel($item)],
             'description' => ['sometimes', 'max:255'],
             'price' => ['required', 'numeric'],
-            'status' => ['required', Rule::in(ItemStatus::all())]
+            'status' => ['required', Rule::in(ItemStatus::all())],
         ]);
 
         $item->update($data);

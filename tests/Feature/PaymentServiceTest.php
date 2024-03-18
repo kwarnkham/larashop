@@ -9,7 +9,6 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Services\Larapay;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
@@ -31,7 +30,7 @@ class PaymentServiceTest extends TestCase
             )->create();
 
         $response = $this->postJson(
-            'api/payment-services/' . $payment->id,
+            'api/payment-services/'.$payment->id,
             json_decode(Larapay::mockResponse($payment), associative: true)
         );
 

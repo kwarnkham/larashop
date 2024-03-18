@@ -13,9 +13,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
 Route::any('/payment-services/{payment}', [PaymentServiceController::class, 'handle']);
-
 
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {

@@ -13,11 +13,16 @@ class AuthController extends Controller
         $data = $request->validate([
             'email' => ['required', 'email', 'unique:users,email'],
             'name' => ['required'],
-            'password' => ['required', 'confirmed']
+            'password' => ['required', 'confirmed'],
         ]);
 
         $user = User::query()->create($data)->fresh();
 
-        return response()->json($user, HttpStatus::CREATED->value);
+        $token = $user->createToken('email');
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token->plainTextToken,
+        ], HttpStatus::CREATED->value);
     }
 }

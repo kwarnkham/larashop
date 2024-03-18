@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Enums\PaymentStatus;
 use App\Models\Payment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -36,7 +36,7 @@ class PaymentTest extends TestCase
 
         $response = $this->actingAs($this->user)->postJson('api/payments', [
             'order_id' => $order->id,
-            'type' => PaymentType::Larapay->value
+            'type' => PaymentType::Larapay->value,
         ]);
 
         $response->assertCreated();

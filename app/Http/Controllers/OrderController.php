@@ -11,7 +11,6 @@ use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
-
     const PER_PAGE = 20;
 
     public function store(Request $request)
@@ -40,7 +39,7 @@ class OrderController extends Controller
         $user = $request->user();
 
         $order = Order::query()->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $order->items()->attach(
@@ -48,8 +47,8 @@ class OrderController extends Controller
                 fn ($item) => [
                     $item->id => [
                         'price' => $item->price,
-                        'quantity' => array_column($data['items'], 'quantity', 'id')[$item->id]
-                    ]
+                        'quantity' => array_column($data['items'], 'quantity', 'id')[$item->id],
+                    ],
                 ]
             )
         );
@@ -64,7 +63,7 @@ class OrderController extends Controller
         return response()
             ->json(
                 [
-                    'pagination' => $query->paginate($request->per_page ?? OrderController::PER_PAGE)
+                    'pagination' => $query->paginate($request->per_page ?? OrderController::PER_PAGE),
                 ],
                 HttpStatus::OK->value
             );
@@ -82,8 +81,8 @@ class OrderController extends Controller
         $data = $request->validate([
             'status' => [
                 'required',
-                Rule::in(OrderStatus::all())
-            ]
+                Rule::in(OrderStatus::all()),
+            ],
         ]);
 
         $order->update($data);
