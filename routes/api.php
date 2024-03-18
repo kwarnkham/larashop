@@ -17,6 +17,7 @@ Route::any('/payment-services/{payment}', [PaymentServiceController::class, 'han
 
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
+        Route::post('change-password', 'changePassword');
     });
     Route::post('register', 'register');
     Route::post('login', 'login');

@@ -49,4 +49,31 @@ class AuthController extends Controller
             'token' => $token->plainTextToken,
         ], HttpStatus::OK->value);
     }
+
+    public function changePassword(Request $request)
+    {
+        $data = $request->validate([
+            'password' => ['required'],
+            'new_password' => ['required', 'confirmed'],
+            'logout_all_other_devices' => ['sometimes', 'boolean']
+        ]);
+
+        $user = $request->user();
+
+        abort_unless(
+            Hash::check($data['password'], $user->password),
+            HttpStatus::FORBIDDEN->value,
+            'Current password is incorrect'
+        );
+
+
+        $user->update(['password', $data['password']]);
+
+        if ($data['logout_all_other_devices'] ?? false) {
+            $currentRequestPersonalAccessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+            $user->tokens()->where('id', '!=', $currentRequestPersonalAccessToken->id)->delete();
+        }
+
+        return response()->json([], HttpStatus::NO_CONTENT->value);
+    }
 }

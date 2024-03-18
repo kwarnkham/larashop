@@ -51,4 +51,37 @@ class AuthTest extends TestCase
 
         $this->assertAuthenticatedAs($user, 'sanctum');
     }
+
+    public function test_change_password(): void
+    {
+        $password = 'password';
+        $newPassword = 'new_password';
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $user = User::factory()->create(['password' => bcrypt($password)]);
+
+        $token = $this->postJson('/api/auth/login', [
+            'email' => $user->email,
+            'password' => $password,
+        ])->json()['token'];
+
+        $response = $this->actingAs($user)->postJson('/api/auth/change-password', [
+            'password' => 'wrong_password',
+            'new_password' => $newPassword,
+            'new_password_confirmation' => $newPassword
+        ]);
+
+        $response->assertForbidden();
+
+        $response = $this->postJson('/api/auth/change-password', [
+            'password' => $password,
+            'new_password' => $newPassword,
+            'new_password_confirmation' => $newPassword,
+            'logout_all_other_devices' => true
+        ], headers: [
+            'Authorization' => "Bearer $token",
+        ]);
+
+        $response->assertNoContent();
+        $this->assertDatabaseCount('personal_access_tokens', 1);
+    }
 }
