@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\HttpStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -73,6 +74,32 @@ class AuthController extends Controller
             $currentRequestPersonalAccessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
             $user->tokens()->where('id', '!=', $currentRequestPersonalAccessToken->id)->delete();
         }
+
+        return response()->json([], HttpStatus::NO_CONTENT->value);
+    }
+
+    public function emailVerification(Request $request)
+    {
+        $user = $request->user();
+        $user->refreshEmailVerificationCode();
+        $user->sendEmailVerificationNotification();
+
+        return response()->json([], HttpStatus::NO_CONTENT->value);
+    }
+
+    public function verifyEmail(Request $request)
+    {
+        $data = $request->validate([
+            'code' => ['required', 'numeric']
+        ]);
+
+        abort_unless(
+            $request->user()->verifyEmailViaCode($data['code']),
+            HttpStatus::BAD_REQUEST->value,
+            'Wrong Code'
+        );
+
+        $request->user()->markEmailAsVerified();
 
         return response()->json([], HttpStatus::NO_CONTENT->value);
     }

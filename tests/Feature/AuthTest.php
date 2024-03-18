@@ -10,6 +10,22 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+    private User $user;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = User::factory()->create();
+    }
+
+    public function test_request_email_verification()
+    {
+        $response = $this->actingAs($this->user)->postJson('api/auth/email-verification');
+        $response->assertNoContent();
+    }
+
     public function test_regsiter_a_user(): void
     {
         $existingUsersCount = User::query()->count();

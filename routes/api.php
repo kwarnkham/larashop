@@ -9,6 +9,7 @@ use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware([Authenticate::using('sanctum')]);
@@ -18,6 +19,7 @@ Route::any('/payment-services/{payment}', [PaymentServiceController::class, 'han
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
         Route::post('change-password', 'changePassword');
+        Route::post('email-verification', 'emailVerification')->middleware(['throttle:1,1']);
     });
     Route::post('register', 'register');
     Route::post('login', 'login');
