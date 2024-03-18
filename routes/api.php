@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware([Authenticate::using('sanctum')]);
 
 Route::any('/payment-services/{payment}', [PaymentServiceController::class, 'handle']);
 
@@ -19,6 +19,7 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
     });
     Route::post('register', 'register');
+    Route::post('login', 'login');
 });
 
 Route::controller(ItemController::class)->prefix('items')->group(function () {

@@ -22,20 +22,33 @@ class AuthTest extends TestCase
         $this->assertDatabaseCount('users', $existingUsersCount + 1);
         $this->assertDatabaseCount('personal_access_tokens', 1);
         $response->assertCreated();
+
         $user = User::query()->where('email', $response->json()['user']['email'])->first();
-        // $this->assertAuthenticated();
+
+        $token = $response->json()['token'];
+        $this->getJson('api/user', headers: [
+            'Authorization' => "Bearer $token",
+        ])->assertOk();
+
+        $this->assertAuthenticatedAs($user, 'sanctum');
     }
 
     public function test_login_a_user(): void
     {
-        $email = fake()->safeEmail();
+        $password = 'password';
+        $user = User::factory()->create(['password' => bcrypt($password)]);
         $response = $this->postJson('/api/auth/login', [
-            'email' => $email,
-            'password' => 'password',
+            'email' => $user->email,
+            'password' => $password,
         ]);
 
-        $user = User::query()->where('email', $email)->first();
+        $response->assertOk();
 
-        $this->assertAuthenticated('auth:sanctum');
+        $token = $response->json()['token'];
+        $this->getJson('api/user', headers: [
+            'Authorization' => "Bearer $token",
+        ])->assertOk();
+
+        $this->assertAuthenticatedAs($user, 'sanctum');
     }
 }
