@@ -40,6 +40,7 @@ Route::controller(ItemController::class)->prefix('items')->group(function () {
 Route::controller(OrderController::class)->prefix('orders')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
         Route::post('', 'store');
+        Route::post('{order}/update', 'updateOrderItem');
         Route::put('{order}', 'update');
     });
     Route::get('', 'index');

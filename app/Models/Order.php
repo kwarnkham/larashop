@@ -40,4 +40,18 @@ class Order extends BaseModel
     {
         return $this->morphOne(Payment::class, 'payable');
     }
+
+    public function saveItems($submittedItems, $data)
+    {
+        $this->items()->sync(
+            $submittedItems->mapWithKeys(
+                fn ($item) => [
+                    $item->id => [
+                        'price' => $item->price,
+                        'quantity' => array_column($data['items'], 'quantity', 'id')[$item->id],
+                    ],
+                ]
+            )
+        );
+    }
 }

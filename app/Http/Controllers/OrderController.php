@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
 use App\Enums\OrderStatus;
+use App\Http\Requests\SubmitOrderRequest;
 use App\Models\Item;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -13,28 +14,11 @@ class OrderController extends Controller
 {
     const PER_PAGE = 20;
 
-    public function store(Request $request)
+    public function store(SubmitOrderRequest $request)
     {
-        $data = $request->validate([
-            'items' => ['required', 'array'],
-            'items.*' => ['required', 'array'],
-            'items.*.id' => ['required', 'exists:items'],
-            'items.*.quantity' => ['required', 'numeric'],
-        ]);
+        $data = $request->validated();
 
-        $submittedItems = Item::query()->whereIn('id', array_map(
-            fn ($value) => $value['id'],
-            $data['items']
-        ))->get();
-
-        $submittedItems->each(function ($submittedItem) {
-            if ($submittedItem->status == 'inactive') {
-                abort(
-                    HttpStatus::BAD_REQUEST->value,
-                    "The item '{$submittedItem->name}' is inactive."
-                );
-            }
-        });
+        $submittedItems = $request->getSubmittedItems();
 
         $user = $request->user();
 
@@ -42,16 +26,7 @@ class OrderController extends Controller
             'user_id' => $user->id,
         ]);
 
-        $order->items()->attach(
-            $submittedItems->mapWithKeys(
-                fn ($item) => [
-                    $item->id => [
-                        'price' => $item->price,
-                        'quantity' => array_column($data['items'], 'quantity', 'id')[$item->id],
-                    ],
-                ]
-            )
-        );
+        $order->saveItems($submittedItems, $data);
 
         return response()->json($order, HttpStatus::CREATED->value);
     }
@@ -86,6 +61,19 @@ class OrderController extends Controller
         ]);
 
         $order->update($data);
+
+        return response()->json($order);
+    }
+
+    public function updateOrderItem(SubmitOrderRequest $request, Order $order)
+    {
+        abort_unless($request->user()->id == $order->user_id, HttpStatus::FORBIDDEN->value);
+
+        $data = $request->validated();
+
+        $submittedItems = $request->getSubmittedItems();
+
+        $order->saveItems($submittedItems, $data);
 
         return response()->json($order);
     }

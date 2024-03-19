@@ -26,6 +26,32 @@ class OrderRESTTest extends TestCase
         $this->user = User::factory()->create();
     }
 
+    public function test_user_can_update_order_item()
+    {
+        $order = Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->create(['user_id' => $this->user->id]);
+
+        $this->assertDatabaseCount('item_order', 2);
+
+        $items = Item::factory()->count(10)->create();
+
+        $data = [
+            'items' => $items->map(
+                fn ($item) => ['id' => $item->id, 'quantity' => fake()->numberBetween(1, 5)]
+            )->toArray(),
+        ];
+
+        $response = $this
+            ->actingAs($this->user)
+            ->postJson("api/orders/{$order->id}/update", $data);
+
+        $response->assertOk();
+
+        $this->assertDatabaseCount('item_order', 10);
+    }
+
     public function test_create_an_order(): void
     {
         $items = Item::factory()->count(10)->create();
@@ -33,7 +59,7 @@ class OrderRESTTest extends TestCase
         $data = [
             'items' => $items->map(
                 fn ($item) => ['id' => $item->id, 'quantity' => fake()->numberBetween(1, 5)]
-            ),
+            )->toArray(),
         ];
 
         $response = $this->actingAs($this->user)->postJson('api/orders', $data);
@@ -80,7 +106,7 @@ class OrderRESTTest extends TestCase
         )->count(30)->create(['user_id' => $this->user->id]);
 
         $order = Order::query()->inRandomOrder()->first();
-        $response = $this->getJson('/api/orders/'.$order->id);
+        $response = $this->getJson('/api/orders/' . $order->id);
         $response->assertOk();
         $this->assertEquals($order->id, $response->json()['id']);
     }
@@ -96,7 +122,7 @@ class OrderRESTTest extends TestCase
             'status' => 'confirmed',
         ];
 
-        $response = $this->actingAs($this->admin)->putJson('/api/orders/'.$order->id, $data);
+        $response = $this->actingAs($this->admin)->putJson('/api/orders/' . $order->id, $data);
         $response->assertOk();
 
         $order->refresh();
