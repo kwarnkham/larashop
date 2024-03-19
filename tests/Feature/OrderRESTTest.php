@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\OrderController;
 use App\Models\Item;
 use App\Models\ItemOrder;
@@ -50,6 +51,28 @@ class OrderRESTTest extends TestCase
         $response->assertOk();
 
         $this->assertDatabaseCount('item_order', 10);
+    }
+
+    public function test_only_owner_or_admin_can_update_order()
+    {
+        $order = Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->create(['user_id' => $this->user->id]);
+
+        $data = [
+            'status' => OrderStatus::Canceled,
+        ];
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $anotherUser */
+        $anotherUser = User::factory()->create();
+        $response = $this->actingAs($anotherUser)->putJson('/api/orders/' . $order->id, $data);
+        $response->assertForbidden();
+
+        $response = $this->actingAs($this->user)->putJson('/api/orders/' . $order->id, $data);
+        $response->assertOk();
+
+        $response = $this->actingAs($this->admin)->putJson('/api/orders/' . $order->id, $data);
+        $response->assertOk();
     }
 
     public function test_create_an_order(): void
@@ -119,7 +142,7 @@ class OrderRESTTest extends TestCase
         )->create(['user_id' => $this->user->id]);
 
         $data = [
-            'status' => 'confirmed',
+            'status' => OrderStatus::Confirmed,
         ];
 
         $response = $this->actingAs($this->admin)->putJson('/api/orders/' . $order->id, $data);
@@ -127,6 +150,6 @@ class OrderRESTTest extends TestCase
 
         $order->refresh();
 
-        $this->assertEquals($response->json()['status'], $data['status']);
+        $this->assertEquals($response->json()['status'], $data['status']->value);
     }
 }

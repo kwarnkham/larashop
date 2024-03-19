@@ -41,7 +41,7 @@ Route::controller(OrderController::class)->prefix('orders')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
         Route::post('', 'store');
         Route::post('{order}/update', 'updateOrderItem');
-        Route::put('{order}', 'update');
+        Route::put('{order}', 'update')->middleware('can:update,order');
     });
     Route::get('', 'index');
     Route::get('{order}', 'find');
