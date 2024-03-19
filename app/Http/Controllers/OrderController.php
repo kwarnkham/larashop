@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
-use App\Enums\OrderStatus;
 use App\Http\Requests\SubmitOrderRequest;
-use App\Models\Item;
+use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -49,14 +47,9 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-    public function update(Request $request, Order $order)
+    public function update(UpdateOrderStatusRequest $request, Order $order)
     {
-        $data = $request->validate([
-            'status' => [
-                'required',
-                Rule::in(OrderStatus::all()),
-            ],
-        ]);
+        $data = $request->validated();
 
         $order->update($data);
 

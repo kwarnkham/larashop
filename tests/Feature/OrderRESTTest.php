@@ -65,14 +65,40 @@ class OrderRESTTest extends TestCase
         ];
         /** @var \Illuminate\Contracts\Auth\Authenticatable $anotherUser */
         $anotherUser = User::factory()->create();
-        $response = $this->actingAs($anotherUser)->putJson('/api/orders/' . $order->id, $data);
+        $response = $this->actingAs($anotherUser)->putJson('/api/orders/'.$order->id, $data);
         $response->assertForbidden();
 
-        $response = $this->actingAs($this->user)->putJson('/api/orders/' . $order->id, $data);
+        $response = $this->actingAs($this->user)->putJson('/api/orders/'.$order->id, $data);
         $response->assertOk();
 
-        $response = $this->actingAs($this->admin)->putJson('/api/orders/' . $order->id, $data);
+        $response = $this->actingAs($this->admin)->putJson('/api/orders/'.$order->id, $data);
         $response->assertOk();
+    }
+
+    public function test_owner_can_only_update_order_status_to_canceled()
+    {
+        $order = Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->create(['user_id' => $this->user->id]);
+
+        $this->assertEquals($order->fresh()->status, OrderStatus::Pending);
+
+        $data = [
+            'status' => OrderStatus::Paid,
+        ];
+
+        $response = $this->actingAs($this->user)->putJson('/api/orders/'.$order->id, $data);
+        $response->assertForbidden();
+
+        $data = [
+            'status' => OrderStatus::Canceled,
+        ];
+
+        $response = $this->actingAs($this->user)->putJson('/api/orders/'.$order->id, $data);
+        $response->assertOk();
+
+        $this->assertEquals($order->fresh()->status, $data['status']);
     }
 
     public function test_create_an_order(): void
@@ -129,7 +155,7 @@ class OrderRESTTest extends TestCase
         )->count(30)->create(['user_id' => $this->user->id]);
 
         $order = Order::query()->inRandomOrder()->first();
-        $response = $this->getJson('/api/orders/' . $order->id);
+        $response = $this->getJson('/api/orders/'.$order->id);
         $response->assertOk();
         $this->assertEquals($order->id, $response->json()['id']);
     }
@@ -145,7 +171,7 @@ class OrderRESTTest extends TestCase
             'status' => OrderStatus::Confirmed,
         ];
 
-        $response = $this->actingAs($this->admin)->putJson('/api/orders/' . $order->id, $data);
+        $response = $this->actingAs($this->admin)->putJson('/api/orders/'.$order->id, $data);
         $response->assertOk();
 
         $order->refresh();

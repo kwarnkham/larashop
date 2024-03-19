@@ -36,12 +36,12 @@ class SubmitOrderRequest extends FormRequest
                 $submittedItems->each(function ($submittedItem, $key) use ($validator) {
                     if ($submittedItem->status == ItemStatus::Inactive) {
                         $validator->errors()->add(
-                            'items.' . $key,
+                            'items.'.$key,
                             "The item '{$submittedItem->name}' is inactive."
                         );
                     }
                 });
-            }
+            },
         ];
     }
 
