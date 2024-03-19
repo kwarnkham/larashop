@@ -3,12 +3,26 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends BaseModel
 {
-    use HasFactory;
+    use BroadcastsEvents, HasFactory;
+
+    /**
+     * Get the channels that model events should broadcast on.
+     *
+     * @return array<int, \Illuminate\Broadcasting\Channel>
+     */
+    public function broadcastOn(string $event): array
+    {
+        return match ($event) {
+            'created' => ['App.Models.Order'],
+            default => [$this, $this->user],
+        };
+    }
 
     protected function casts(): array
     {
