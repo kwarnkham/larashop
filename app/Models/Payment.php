@@ -80,7 +80,7 @@ class Payment extends BaseModel
             return false;
         }
 
-        $this->payable->user->notify(new OrderPaid($this->payable()));
+        $this->payable->user->notify(new OrderPaid($this->payable->id));
 
         return $this->update([
             'result' => $data,
