@@ -38,15 +38,21 @@ class Payment extends BaseModel
         return $this->morphTo();
     }
 
-    public function getService(array $data): PaymentService
+    public function getService(?array $data = null): PaymentService
     {
         if ($this->type == PaymentType::Larapay) {
-            $valid = array_key_exists('reference_id', $data)
-                && array_key_exists('id', $data)
-                && array_key_exists('amount', $data)
-                && array_key_exists('status', $data)
-                && array_key_exists('sign', $data)
-                && array_key_exists('paid_at', $data);
+            $merchantId = 'merchantId'; //should comes from config set via env
+            $key = 'key'; //should comes from config set via env
+            if ($data != null) {
+                $valid = array_key_exists('reference_id', $data)
+                    && array_key_exists('id', $data)
+                    && array_key_exists('amount', $data)
+                    && array_key_exists('status', $data)
+                    && array_key_exists('sign', $data)
+                    && array_key_exists('paid_at', $data);
+            } else {
+                return Larapay::createForRequest($this->id, $this->amount);
+            }
             if (! $valid) {
                 return null;
             }
@@ -77,6 +83,13 @@ class Payment extends BaseModel
             'result' => $data,
             'status' => $paymentService->getStatus(),
         ]);
+    }
+
+    public function requestPaymentUrl(): string
+    {
+        $paymentService = $this->getService();
+
+        return $paymentService->requestPaymentUrl();
     }
 
     public function handlePaymentServiceResponse(string $paymentServiceResponse)

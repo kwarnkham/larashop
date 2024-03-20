@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
+use App\Enums\PaymentType;
 use App\Http\Requests\SubmitOrderRequest;
 use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -67,5 +69,21 @@ class OrderController extends Controller
         $order->saveItems($submittedItems, $data);
 
         return response()->json($order);
+    }
+
+    public function pay(Request $request, Order $order)
+    {
+        $data = $request->validate([
+            'type' => ['required', Rule::in(PaymentType::all())],
+        ]);
+
+        $payment = $order->payment()->create([
+            'type' => $data['type'],
+            'amount' => $order->amount,
+        ]);
+
+        $paymentUrl = $payment->requestPaymentUrl();
+
+        return response()->json($paymentUrl, HttpStatus::OK->value);
     }
 }

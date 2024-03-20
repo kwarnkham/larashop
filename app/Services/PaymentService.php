@@ -7,6 +7,12 @@ use App\Models\Payment;
 
 interface PaymentService
 {
+    const PAYMENT_URL = 'https://payhere.com';
+
+    const KEY = 'key';
+
+    const MERCHANT_ID = 'mechant id';
+
     public function verifySign(): bool;
 
     public function getSign(array $data): string;
@@ -15,6 +21,5 @@ interface PaymentService
 
     public function getStatus(): PaymentStatus;
 
-    // public static function requestPayment(Payment $payment);
-
+    public function requestPaymentUrl(): string;
 }

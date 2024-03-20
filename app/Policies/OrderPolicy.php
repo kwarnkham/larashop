@@ -62,4 +62,9 @@ class OrderPolicy
     {
         return $user->hasRole('admin') || $user->id == $order->user_id;
     }
+
+    public function pay(User $user, Order $order): bool
+    {
+        return $user->id == $order->user_id;
+    }
 }

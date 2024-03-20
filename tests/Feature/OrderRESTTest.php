@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentType;
 use App\Http\Controllers\OrderController;
 use App\Models\Item;
 use App\Models\ItemOrder;
@@ -177,5 +178,23 @@ class OrderRESTTest extends TestCase
         $order->refresh();
 
         $this->assertEquals($response->json()['status'], $data['status']->value);
+    }
+
+    public function test_user_pays_for_an_order(): void
+    {
+        $order = Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->create(['user_id' => $this->user->id]);
+
+        $data = [
+            'type' => PaymentType::Larapay,
+        ];
+
+        $response = $this->actingAs($this->user)->postJson('/api/orders/'.$order->id.'/pay', $data);
+
+        $response->assertOk();
+
+        $this->assertDatabaseCount('payments', 1);
     }
 }
