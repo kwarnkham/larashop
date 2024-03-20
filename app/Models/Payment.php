@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
 use App\Jobs\ProcessPayment;
+use App\Notifications\OrderPaid;
 use App\Services\Larapay;
 use App\Services\PaymentService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -78,6 +79,8 @@ class Payment extends BaseModel
         if (! $paymentService->verifySign()) {
             return false;
         }
+
+        $this->payable->user->notify(new OrderPaid($this->payable()));
 
         return $this->update([
             'result' => $data,

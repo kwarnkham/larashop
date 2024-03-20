@@ -37,7 +37,7 @@ class ResetPassword extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Reset Password')
             ->line("Your code for resetting password is \"{$notifiable->getPasswordResetCode()}\".")
-            ->line(' The code is valid for only 1 minute.');
+            ->line('The code is valid for only 1 minute.');
     }
 
     /**
