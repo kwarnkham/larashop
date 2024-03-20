@@ -63,6 +63,12 @@
         ],
         "pint": [
             "@php ./vendor/bin/pint"
+        ],
+        "encrypt:env": [
+            "@php artisan encrypt:env"
+        ],
+        "decrypt:env": [
+            "@php artisan env:decrypt --force"
         ]
     },
     "extra": {
