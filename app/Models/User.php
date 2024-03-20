@@ -96,8 +96,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->refreshPasswordResetCode();
     }
 
-    public function sendPasswordResetCode()
+    public function sendPasswordResetCode(bool $resetCode = false)
     {
+        if ($resetCode) {
+            $this->refreshPasswordResetCode();
+        }
         $this->notify(new ResetPassword);
     }
 }

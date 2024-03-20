@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
 use App\Jobs\SendEmailVerificationCode;
-use App\Jobs\SendPasswordResetCode;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -58,7 +57,7 @@ class AuthController extends Controller
 
         $user = User::query()->where('email', $data['email'])->first();
 
-        SendPasswordResetCode::dispatch($user);
+        $user->sendPasswordResetCode(true);
 
         return response()->json([], HttpStatus::NO_CONTENT->value);
     }
