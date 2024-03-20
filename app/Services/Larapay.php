@@ -22,6 +22,14 @@ class Larapay implements PaymentService
     ) {
     }
 
+    public function getSign(array $data): string
+    {
+        ksort($data);
+        $sign = md5(http_build_query($data).'&key='.static::KEY);
+
+        return $sign;
+    }
+
     public static function mockResponse(Payment $payment): string
     {
         $data = [
@@ -61,9 +69,7 @@ class Larapay implements PaymentService
             'paid_at' => $this->paidAt,
             'status' => $this->status,
         ];
-        ksort($data);
-        $sign = md5(http_build_query($data).'&key='.static::KEY);
 
-        return $sign == $this->sign;
+        return $this->getSign($data) == $this->sign;
     }
 }
