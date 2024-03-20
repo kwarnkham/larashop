@@ -32,7 +32,7 @@ class ResetPassword extends Notification
     {
         return (new MailMessage)
             ->subject('Reset Password')
-            ->line("Your code for resetting password is {$notifiable->getPasswordResetCode()}")
+            ->line("Your code for resetting password is \"{$notifiable->getPasswordResetCode()}\".")
             ->line(' The code is valid for only 1 minute.');
     }
 
