@@ -32,6 +32,12 @@ class Payment extends BaseModel
                 $payment->handlePaymentServiceResponse(Larapay::mockResponse($payment));
             }
         });
+
+        static::updated(function (Payment $payment) {
+            if ($payment->status == PaymentStatus::Completed) {
+                $payment->payable->user->notify(new OrderPaid($payment->payable->id));
+            }
+        });
     }
 
     public function payable()
@@ -79,8 +85,6 @@ class Payment extends BaseModel
         if (! $paymentService->verifySign()) {
             return false;
         }
-
-        $this->payable->user->notify(new OrderPaid($this->payable->id));
 
         return $this->update([
             'result' => $data,
