@@ -70,10 +70,9 @@
         "decrypt:env": [
             "@php artisan env:decrypt --force"
         ],
-        "sync": [
+        "pre-sync": [
             "@php ./vendor/bin/pint",
-            "@php artisan encrypt:env",
-            "git push"
+            "@php artisan encrypt:env"
         ]
     },
     "extra": {

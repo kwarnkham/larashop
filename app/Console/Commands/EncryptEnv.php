@@ -27,11 +27,12 @@ class EncryptEnv extends Command
     public function handle()
     {
         $key = config('app')['env_encryption_key'];
-        if ($key == null) echo 'No env encryption key found';
-        else {
+        if ($key == null) {
+            echo 'No env encryption key found';
+        } else {
             $exitCode = Artisan::call("env:encrypt --force --key=$key");
             if ($exitCode == 0) {
-                echo "Encrypted successfully";
+                echo 'Encrypted successfully';
             } else {
                 echo "The command is execuated with exit code :$exitCode";
             }
