@@ -33,6 +33,7 @@ class Larapay implements PaymentService
             'merchant_id' => static::MERCHANT_ID,
             'amount' => $this->amount,
             'merchant_order_id' => $this->referenceId,
+            'notify_url' => route('payment_notification_url', ['payment' => $this->referenceId]),
             //and other data needed for request
         ];
 
@@ -49,7 +50,7 @@ class Larapay implements PaymentService
         return $response['pay_url'];
     }
 
-    public static function createForRequest($referenceId, $amount)
+    public static function createForRequest($referenceId, $amount): self
     {
         return new self($referenceId, null, $amount, null, null, null);
     }

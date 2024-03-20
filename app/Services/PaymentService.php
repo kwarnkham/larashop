@@ -7,7 +7,7 @@ use App\Models\Payment;
 
 interface PaymentService
 {
-    const PAYMENT_URL = 'https://payhere.com';
+    const PAYMENT_URL = 'payment url';
 
     const KEY = 'key';
 
@@ -22,4 +22,6 @@ interface PaymentService
     public function getStatus(): PaymentStatus;
 
     public function requestPaymentUrl(): string;
+
+    public static function createForRequest($referenceId, $amount): self;
 }

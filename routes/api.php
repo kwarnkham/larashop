@@ -13,7 +13,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware([Authenticate::using('sanctum')]);
 
-Route::any('/payment-services/{payment}', [PaymentServiceController::class, 'handle']);
+Route::any('/payment-services/{payment}', [PaymentServiceController::class, 'handle'])->name('payment_notification_url');
 
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
