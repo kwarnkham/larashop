@@ -8,9 +8,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
 use App\Services\Larapay;
-use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
@@ -21,7 +19,6 @@ class PaymentServiceTest extends TestCase
     public function test_handle_respone_from_payment_service(): void
     {
         Queue::fake([ProcessPayment::class]);
-        Event::fake([BroadcastableModelEventOccurred::class]);
         $payment = Payment::factory()
             ->for(
                 Order::factory()

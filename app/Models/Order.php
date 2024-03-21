@@ -6,6 +6,7 @@ use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\App;
 
 class Order extends BaseModel
 {
@@ -18,6 +19,10 @@ class Order extends BaseModel
      */
     public function broadcastOn(string $event): array
     {
+        if (App::environment() == 'testing') {
+            return [];
+        }
+
         return match ($event) {
             'created' => ['App.Models.Order'],
             default => [$this, $this->user],
