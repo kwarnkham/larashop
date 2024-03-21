@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 
 class Order extends BaseModel
 {
@@ -39,7 +40,7 @@ class Order extends BaseModel
     public function amount(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->items()->sum('item_order.price')
+            get: fn () => $this->items()->sum(DB::raw('item_order.price*item_order.quantity'))
         );
     }
 
@@ -47,6 +48,7 @@ class Order extends BaseModel
     {
         return $this->belongsToMany(Item::class)
             ->using(ItemOrder::class)
+            ->withTimestamps()
             ->withPivot(['price', 'quantity']);
     }
 
