@@ -25,13 +25,13 @@ class Payment extends BaseModel
 
     protected static function booted(): void
     {
-        static::created(function (Payment $payment) {
-            $payment->refresh();
-            //mocking responding to payment service callback to /api/payment-services/{payment}
-            if ($payment->type === PaymentType::Larapay) {
-                $payment->handlePaymentServiceResponse(Larapay::mockResponse($payment));
-            }
-        });
+        // static::created(function (Payment $payment) {
+        //     $payment->refresh();
+        //     //mocking responding to payment service callback to /api/payment-services/{payment}
+        //     if ($payment->type === PaymentType::Larapay) {
+        //         $payment->handlePaymentServiceResponse(Larapay::mockResponse($payment));
+        //     }
+        // });
 
         static::updated(function (Payment $payment) {
             if ($payment->status == PaymentStatus::Completed) {
