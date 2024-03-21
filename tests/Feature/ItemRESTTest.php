@@ -6,6 +6,8 @@ use App\Http\Controllers\ItemController;
 use App\Models\Item;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ItemRESTTest extends TestCase
@@ -80,5 +82,18 @@ class ItemRESTTest extends TestCase
         $response->assertNoContent();
         $this->assertNotNull($item->fresh()->deleted_at);
         $this->assertDatabaseCount('items', 1);
+    }
+
+    public function test_upload_item_picture()
+    {
+        Storage::fake('s3');
+        $item = Item::factory()->create();
+        $picture = UploadedFile::fake()->image('foo.jpg');
+        $response = $this->actingAs($this->admin)
+            ->postJson('/api/items/'.$item->id.'/upload-picture', ['picture' => $picture]);
+
+        $response->assertCreated();
+        $this->assertDatabaseCount('pictures', 1);
+        Storage::assertExists($response->json()['name']);
     }
 }

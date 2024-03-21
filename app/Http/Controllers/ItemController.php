@@ -6,6 +6,7 @@ use App\Enums\HttpStatus;
 use App\Enums\ItemStatus;
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
@@ -23,6 +24,21 @@ class ItemController extends Controller
         $item = Item::query()->create($data);
 
         return response()->json($item, HttpStatus::CREATED->value);
+    }
+
+    public function uploadPicture(Request $request, Item $item)
+    {
+        $data = $request->validate([
+            'picture' => ['required', 'image'],
+        ]);
+
+        $name = Storage::putFile('items', $data['picture']);
+
+        abort_if(! $name, HttpStatus::BAD_REQUEST->value, 'Cannot upload the file');
+
+        $picture = $item->pictures()->create(['name' => $name]);
+
+        return response()->json($picture, HttpStatus::CREATED->value);
     }
 
     public function index(Request $request)

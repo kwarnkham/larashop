@@ -16,4 +16,9 @@ class Item extends BaseModel
             'status' => ItemStatus::class,
         ];
     }
+
+    public function pictures()
+    {
+        return $this->morphMany(Picture::class, 'pictureable');
+    }
 }

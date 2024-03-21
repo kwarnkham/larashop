@@ -30,6 +30,7 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
 Route::controller(ItemController::class)->prefix('items')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
         Route::post('', 'store');
+        Route::post('{item}/upload-picture', 'uploadPicture');
         Route::put('{item}', 'update');
     });
     Route::get('', 'index');
