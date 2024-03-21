@@ -48,8 +48,9 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 Route::controller(OrderController::class)->prefix('orders')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
         Route::post('', 'store');
-        Route::post('{order}/update', 'updateOrderItem');
+        Route::post('{order}/update', 'updateOrderItem')->middleware('can:update,order');
         Route::post('{order}/pay', 'pay')->middleware('can:pay,order');
+        Route::post('{order}/receipt', 'downloadReceipt')->middleware('can:view,order');
         Route::put('{order}', 'update')->middleware('can:update,order');
     });
     Route::get('', 'index');

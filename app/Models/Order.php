@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,6 +42,19 @@ class Order extends BaseModel
     {
         return Attribute::make(
             get: fn () => $this->items()->sum(DB::raw('item_order.price*item_order.quantity'))
+        );
+    }
+
+    public function paidAt(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if ($this->payment == null) {
+                    return null;
+                }
+
+                return $this->payment->status == PaymentStatus::Completed ? $this->payment->updated_at : null;
+            }
         );
     }
 

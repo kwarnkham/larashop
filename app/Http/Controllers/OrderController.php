@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
+use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
 use App\Http\Requests\SubmitOrderRequest;
 use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -85,5 +87,17 @@ class OrderController extends Controller
         $paymentUrl = $payment->requestPaymentUrl();
 
         return response()->json($paymentUrl, HttpStatus::OK->value);
+    }
+
+    public function downloadReceipt(Request $request, Order $order)
+    {
+        abort_unless(
+            $order->payment && $order->payment->status == PaymentStatus::Completed, HttpStatus::BAD_REQUEST->value,
+            'Order has not been paid yet');
+
+        $pdf = Pdf::loadView('receipt.order',
+            ['order' => $order->load(['payment', 'items', 'user'])->first()]);
+
+        return $pdf->download("Receipt #{$order->id}");
     }
 }

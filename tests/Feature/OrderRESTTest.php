@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
 use App\Http\Controllers\OrderController;
 use App\Models\Item;
 use App\Models\ItemOrder;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -52,6 +54,21 @@ class OrderRESTTest extends TestCase
         $response->assertOk();
 
         $this->assertDatabaseCount('item_order', 10);
+    }
+
+    public function test_user_can_download_receipt_of_an_order()
+    {
+        $order = Order::factory()
+            ->hasAttached(
+                Item::factory()->count(2),
+                ['quantity' => 2, 'price' => 1000]
+            )->has(Payment::factory()->state(['amount' => 4000, 'status' => PaymentStatus::Completed]))->create(['user_id' => $this->user->id]);
+
+        $response = $this
+            ->actingAs($this->user)
+            ->postJson("api/orders/{$order->id}/receipt");
+
+        $response->assertDownload();
     }
 
     public function test_only_owner_or_admin_can_update_order()
