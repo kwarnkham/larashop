@@ -34,7 +34,7 @@ class ItemController extends Controller
 
         $name = Storage::putFile('items', $data['picture']);
 
-        abort_if(! $name, HttpStatus::BAD_REQUEST->value, 'Cannot upload the file');
+        abort_if(! $name, HttpStatus::BAD_REQUEST->value, 'Cannot upload the picture');
 
         $picture = $item->pictures()->create(['name' => $name]);
 
