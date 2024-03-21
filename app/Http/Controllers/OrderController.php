@@ -98,6 +98,6 @@ class OrderController extends Controller
         $pdf = Pdf::loadView('receipt.order',
             ['order' => $order->load(['payment', 'items', 'user'])->first()]);
 
-        return $pdf->download("Receipt #{$order->id}");
+        return $pdf->download(config('app')['name']." Receipt #{$order->id}.pdf");
     }
 }
