@@ -10,6 +10,8 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Notifications\OrderPaid;
 use App\Services\Larapay;
+use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -18,6 +20,7 @@ class PaymentTest extends TestCase
     public function test_process_payment(): void
     {
         Notification::fake();
+        Event::fake([BroadcastableModelEventOccurred::class]);
         $user = User::factory()->create()->fresh();
         $payment = Payment::factory()
             ->for(

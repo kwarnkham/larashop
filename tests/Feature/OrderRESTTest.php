@@ -9,7 +9,9 @@ use App\Models\Item;
 use App\Models\ItemOrder;
 use App\Models\Order;
 use App\Models\User;
+use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class OrderRESTTest extends TestCase
@@ -26,6 +28,7 @@ class OrderRESTTest extends TestCase
         $this->seed();
         $this->admin = User::query()->whereRelation('roles', 'name', 'admin')->first();
         $this->user = User::factory()->create();
+        Event::fake([BroadcastableModelEventOccurred::class]);
     }
 
     public function test_user_can_update_order_item()
