@@ -10,11 +10,14 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Notifications\OrderPaid;
 use App\Services\Larapay;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class PaymentTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_process_payment(): void
     {
         Notification::fake();
