@@ -19,6 +19,7 @@ class AddressFactory extends Factory
         $country = fake()->country();
 
         return [
+            'name' => fake()->unique()->name(),
             'country' => $country,
             'province' => "$country's province",
             'township' => "$country's township",
