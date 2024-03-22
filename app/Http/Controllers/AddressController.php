@@ -20,9 +20,10 @@ class AddressController extends Controller
             'street_four' => ['sometimes', 'required'],
             'phone' => ['required'],
             'zip_code' => ['sometimes', 'required'],
+            'default' => ['sometimes', 'required', 'boolean'],
         ]);
 
-        $address = $request->user()->addresses()->create($data);
+        $address = $request->user()->addresses()->create($data)->fresh();
 
         return response()->json($address, HttpStatus::CREATED->value);
     }
