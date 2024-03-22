@@ -100,4 +100,15 @@ class OrderController extends Controller
 
         return $pdf->download(config('app')['name']." Receipt #{$order->id}.pdf");
     }
+
+    public function setAddress(Request $request, Order $order)
+    {
+        $data = $request->validate([
+            'address_id' => ['required', 'exists:addresses,id'],
+        ]);
+
+        $order->update(['address_id' => $data['address_id']]);
+
+        return response()->json($order, HttpStatus::OK->value);
+    }
 }

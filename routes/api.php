@@ -59,6 +59,7 @@ Route::controller(OrderController::class)->prefix('orders')->group(function () {
         Route::post('{order}/pay', 'pay')->middleware('can:pay,order');
         Route::post('{order}/receipt', 'downloadReceipt')->middleware('can:view,order');
         Route::put('{order}', 'update')->middleware('can:update,order');
+        Route::post('{order}/set-address', 'setAddress')->middleware('can:update,order');
     });
     Route::get('', 'index');
     Route::get('{order}', 'find');
