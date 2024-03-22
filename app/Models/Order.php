@@ -27,6 +27,7 @@ class Order extends BaseModel
 
         return match ($event) {
             'created' => ['App.Models.Order'],
+            'deleted' => [],
             default => [$this, $this->user],
         };
     }
