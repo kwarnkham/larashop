@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\OrderController;
@@ -42,6 +43,12 @@ Route::controller(ItemController::class)->prefix('items')->group(function () {
 Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
         Route::post('upload-picture', 'uploadPicture');
+    });
+});
+
+Route::controller(AddressController::class)->prefix('addresses')->group(function () {
+    Route::middleware([Authenticate::using('sanctum')])->group(function () {
+        Route::post('', 'store');
     });
 });
 

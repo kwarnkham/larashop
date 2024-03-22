@@ -72,6 +72,11 @@ class Order extends BaseModel
         return $this->belongsTo(User::class);
     }
 
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
+    }
+
     public function payment()
     {
         return $this->morphOne(Payment::class, 'payable');
