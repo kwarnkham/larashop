@@ -87,6 +87,18 @@ class AuthTest extends TestCase
         $this->assertAuthenticatedAs($user, 'sanctum');
     }
 
+    public function test_restricted_user_cannot_login(): void
+    {
+        $password = 'password';
+        $user = User::factory()->create(['password' => bcrypt($password), 'restricted' => true]);
+        $response = $this->postJson('/api/auth/login', [
+            'email' => $user->email,
+            'password' => $password,
+        ]);
+
+        $response->assertForbidden();
+    }
+
     public function test_change_password(): void
     {
         $password = 'password';

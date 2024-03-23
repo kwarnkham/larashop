@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\HttpStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -44,7 +45,10 @@ class UserController extends Controller
 
     public function toggleRestriction(Request $request, User $user)
     {
-        $user->update(['restricted' => ! $user->restricted]);
+        DB::transaction(function () use ($user) {
+            $user->update(['restricted' => ! $user->restricted]);
+            $user->tokens()->delete();
+        });
 
         return response()->json($user);
     }

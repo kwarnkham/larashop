@@ -71,6 +71,12 @@ class AuthController extends Controller
 
         $user = User::query()->where('email', $data['email'])->first();
 
+        abort_if(
+            $user->restricted,
+            HttpStatus::FORBIDDEN->value,
+            'User has been restricted'
+        );
+
         abort_unless(
             $user != null && Hash::check($data['password'], $user->password),
             HttpStatus::UNAUTHORIZED->value,
