@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
+use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
 use App\Http\Requests\SubmitOrderRequest;
@@ -63,6 +64,8 @@ class OrderController extends Controller
     public function updateOrderItem(SubmitOrderRequest $request, Order $order)
     {
         abort_unless($request->user()->id == $order->user_id, HttpStatus::FORBIDDEN->value);
+
+        abort_unless($order->status == OrderStatus::Pending, HttpStatus::BAD_REQUEST->value, 'Can only update a pending order');
 
         $data = $request->validated();
 
