@@ -41,4 +41,11 @@ class UserController extends Controller
     {
         return response()->json($user);
     }
+
+    public function toggleRestriction(Request $request, User $user)
+    {
+        $user->update(['restricted' => ! $user->restricted]);
+
+        return response()->json($user);
+    }
 }

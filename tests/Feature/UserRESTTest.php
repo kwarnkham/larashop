@@ -63,4 +63,21 @@ class UserRESTTest extends TestCase
         $response->assertOk();
         $this->assertEquals($this->user->id, $response->json()['id']);
     }
+
+    public function test_admin_toggle_user_restriction(): void
+    {
+        $response = $this
+            ->actingAs($this->admin)
+            ->postJson("api/users/{$this->user->id}/toggle-restriction");
+
+        $response->assertOk();
+        $this->assertTrue((bool) $this->user->fresh()->restricted);
+
+        $response = $this
+            ->actingAs($this->admin)
+            ->postJson("api/users/{$this->user->id}/toggle-restriction");
+
+        $response->assertOk();
+        $this->assertFalse((bool) $this->user->fresh()->restricted);
+    }
 }
