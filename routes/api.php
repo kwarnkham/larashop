@@ -58,14 +58,14 @@ Route::controller(AddressController::class)->prefix('addresses')->group(function
 
 Route::controller(OrderController::class)->prefix('orders')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
-        Route::post('', 'store');
+        Route::post('', 'store')->middleware('can:create,App\Models\Order');
         Route::post('{order}/update', 'updateOrderItem')->middleware('can:update,order');
         Route::post('{order}/pay', 'pay')->middleware('can:pay,order');
         Route::post('{order}/receipt', 'downloadReceipt')->middleware('can:view,order');
         Route::put('{order}', 'update')->middleware('can:update,order');
         Route::post('{order}/set-address', 'setAddress')->middleware('can:update,order');
         Route::get('', 'index');
-        Route::get('{order}', 'find');
+        Route::get('{order}', 'find')->middleware('can:view,order');
     });
 
 });

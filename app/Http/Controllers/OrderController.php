@@ -36,7 +36,14 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
+        $user = $request->user();
+
         $filters = $request->only(['status']);
+
+        if (! $user->hasRole('admin')) {
+            $filters['user_id'] = $user->id;
+        }
+
         $query = Order::query()->filter($filters);
 
         return response()

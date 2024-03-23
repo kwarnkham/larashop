@@ -12,6 +12,10 @@ trait Filterable
             $q->whereIn('status', explode(',', $status));
         });
 
+        $query->when($filters['user_id'] ?? null, function (Builder $q, $userId) {
+            $q->where('user_id', $userId);
+        });
+
         return $query;
     }
 }

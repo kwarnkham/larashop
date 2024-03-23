@@ -233,4 +233,37 @@ class OrderRESTTest extends TestCase
 
         $this->assertDatabaseCount('payments', 1);
     }
+
+    public function test_user_can_only_view_owned_orders(): void
+    {
+        $order = Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->for(User::factory())->create();
+
+        $response = $this->actingAs($this->user)->getJson('/api/orders');
+
+        $response->assertOk();
+
+        $response->assertJsonCount(0, 'pagination.data');
+
+        $response = $this->actingAs($this->user)->getJson("/api/orders/{$order->id}");
+
+        $response->assertForbidden();
+
+        $order = Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->create(['user_id' => $this->user->id]);
+
+        $response = $this->actingAs($this->user)->getJson('/api/orders');
+
+        $response->assertOk();
+
+        $response->assertJsonCount(1, 'pagination.data');
+
+        $response = $this->actingAs($this->user)->getJson("/api/orders/{$order->id}");
+
+        $response->assertOk();
+    }
 }
