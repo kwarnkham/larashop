@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
@@ -36,9 +37,14 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
+        $request->validate([
+            'from' => ['sometimes', 'date'],
+            'to' => ['sometimes', 'date'],
+        ]);
+
         $user = $request->user();
 
-        $filters = $request->only(['status']);
+        $filters = $request->only(['status', 'from', 'to']);
 
         if (! $user->hasRole('admin')) {
             $filters['user_id'] = $user->id;
@@ -46,10 +52,15 @@ class OrderController extends Controller
 
         $query = Order::query()->filter($filters);
 
+        $report = [
+            'amount' => $query->withSum('items as amount', DB::raw('item_order.price*item_order.quantity'))->pluck('amount')->sum(),
+        ];
+
         return response()
             ->json(
                 [
                     'pagination' => $query->paginate($request->per_page ?? OrderController::PER_PAGE),
+                    'report' => $report,
                 ],
                 HttpStatus::OK->value
             );

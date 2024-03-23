@@ -266,4 +266,42 @@ class OrderRESTTest extends TestCase
 
         $response->assertOk();
     }
+
+    public function test_date_filtering_orders(): void
+    {
+        Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->for(User::factory())->create(['updated_at' => now()]);
+
+        Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->for(User::factory())->create(['updated_at' => now()->addDay()]);
+
+        Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => 1, 'price' => 1]
+        )->for(User::factory())->create(['updated_at' => now()->addDays(2)]);
+
+        $query = http_build_query([
+            'from' => now()->subDay()->toDateString(),
+            'to' => now()->subDay()->toDateString()]);
+        $this->actingAs($this->admin)->getJson('/api/orders?'.$query)->assertJsonCount(0, 'pagination.data');
+
+        $query = http_build_query([
+            'from' => now()->toDateString(),
+            'to' => now()->toDateString()]);
+        $this->actingAs($this->admin)->getJson('/api/orders?'.$query)->assertJsonCount(1, 'pagination.data');
+
+        $query = http_build_query([
+            'from' => now()->toDateString(),
+            'to' => now()->addDay()->toDateString()]);
+        $this->actingAs($this->admin)->getJson('/api/orders?'.$query)->assertJsonCount(2, 'pagination.data');
+
+        $query = http_build_query([
+            'from' => now()->toDateString(),
+            'to' => now()->addDays(2)->toDateString()]);
+        $this->actingAs($this->admin)->getJson('/api/orders?'.$query)->assertJsonCount(3, 'pagination.data');
+    }
 }
