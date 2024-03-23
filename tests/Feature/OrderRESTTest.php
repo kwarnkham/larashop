@@ -13,6 +13,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class OrderRESTTest extends TestCase
@@ -303,5 +304,31 @@ class OrderRESTTest extends TestCase
             'from' => now()->toDateString(),
             'to' => now()->addDays(2)->toDateString()]);
         $this->actingAs($this->admin)->getJson('/api/orders?'.$query)->assertJsonCount(3, 'pagination.data');
+    }
+
+    public function test_amount_report_of_orders(): void
+    {
+        Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => fake()->numberBetween(1, 10), 'price' => fake()->numberBetween(100, 1000)]
+        )->for(User::factory())->create(['updated_at' => now()]);
+
+        Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => fake()->numberBetween(1, 10), 'price' => fake()->numberBetween(100, 1000)]
+        )->for(User::factory())->create(['updated_at' => now()->addDay()]);
+
+        Order::factory()->hasAttached(
+            Item::factory()->count(2),
+            ['quantity' => fake()->numberBetween(1, 10), 'price' => fake()->numberBetween(100, 1000)]
+        )->for(User::factory())->create(['updated_at' => now()->addDays(2)]);
+
+        $query = http_build_query([
+            'from' => now()->toDateString(),
+            'to' => now()->addDays(2)->toDateString()]);
+
+        $response = $this->actingAs($this->admin)->getJson('/api/orders?'.$query);
+
+        $this->assertEquals(DB::table('item_order')->sum(DB::raw('price*quantity')), $response->json()['report']['amount']);
     }
 }
