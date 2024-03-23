@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
+    const PER_PAGE = 20;
+
     public function uploadPicture(Request $request)
     {
         $data = $request->validate([
@@ -23,5 +26,14 @@ class UserController extends Controller
         $user->update(['picture' => $picture]);
 
         return response()->json($user);
+    }
+
+    public function index(Request $request)
+    {
+        $query = User::query()->latest('id');
+
+        return response()->json([
+            'pagination' => $query->paginate($request->per_page ?? UserController::PER_PAGE),
+        ]);
     }
 }
