@@ -34,10 +34,11 @@ Route::controller(ItemController::class)->prefix('items')->group(function () {
         Route::post('', 'store');
         Route::post('{item}/upload-picture', 'uploadPicture');
         Route::put('{item}', 'update');
+        Route::delete('{item}', 'destroy');
     });
     Route::get('', 'index');
     Route::get('{item}', 'find');
-    Route::delete('{item}', 'destroy');
+
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
@@ -60,9 +61,10 @@ Route::controller(OrderController::class)->prefix('orders')->group(function () {
         Route::post('{order}/receipt', 'downloadReceipt')->middleware('can:view,order');
         Route::put('{order}', 'update')->middleware('can:update,order');
         Route::post('{order}/set-address', 'setAddress')->middleware('can:update,order');
+        Route::get('', 'index');
+        Route::get('{order}', 'find');
     });
-    Route::get('', 'index');
-    Route::get('{order}', 'find');
+
 });
 
 Route::controller(PaymentController::class)->prefix('payments')->group(function () {
