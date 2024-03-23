@@ -161,7 +161,7 @@ class OrderRESTTest extends TestCase
             Item::factory()->count(2),
             ['quantity' => 1, 'price' => 1]
         )->count(30)->create(['user_id' => $this->user->id]);
-        $response = $this->getJson('/api/orders');
+        $response = $this->actingAs($this->admin)->getJson('/api/orders');
         $response->assertOk();
         $response->assertJsonCount(OrderController::PER_PAGE, 'pagination.data');
     }
@@ -174,7 +174,7 @@ class OrderRESTTest extends TestCase
         )->count(30)->create(['user_id' => $this->user->id]);
 
         $order = Order::query()->inRandomOrder()->first();
-        $response = $this->getJson('/api/orders/'.$order->id);
+        $response = $this->actingAs($this->admin)->getJson('/api/orders/'.$order->id);
         $response->assertOk();
         $this->assertEquals($order->id, $response->json()['id']);
     }
