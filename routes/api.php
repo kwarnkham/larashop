@@ -45,6 +45,7 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::middleware([Authenticate::using('sanctum')])->group(function () {
         Route::post('upload-picture', 'uploadPicture');
         Route::get('', 'index')->middleware(['role:admin']);
+        Route::get('{user}', 'find')->middleware(['role:admin']);
     });
 });
 

@@ -36,4 +36,9 @@ class UserController extends Controller
             'pagination' => $query->paginate($request->per_page ?? UserController::PER_PAGE),
         ]);
     }
+
+    public function find(Request $request, User $user)
+    {
+        return response()->json($user);
+    }
 }

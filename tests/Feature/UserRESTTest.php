@@ -53,4 +53,14 @@ class UserRESTTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_admin_find_a_user(): void
+    {
+        $response = $this
+            ->actingAs($this->admin)
+            ->getJson("api/users/{$this->user->id}");
+
+        $response->assertOk();
+        $this->assertEquals($this->user->id, $response->json()['id']);
+    }
 }
