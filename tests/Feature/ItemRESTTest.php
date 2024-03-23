@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\ItemStatus;
 use App\Http\Controllers\ItemController;
 use App\Models\Item;
 use App\Models\User;
@@ -44,6 +45,17 @@ class ItemRESTTest extends TestCase
         $response = $this->getJson('/api/items');
         $response->assertOk();
         $response->assertJsonCount(ItemController::PER_PAGE, 'pagination.data');
+    }
+
+    public function test_list_items_filtered_by_status(): void
+    {
+        $count = fake()->numberBetween(1, 10);
+        Item::factory()->count($count)->create(['status' => ItemStatus::Inactive]);
+        Item::factory()->count(30)->create();
+        $query = http_build_query(['status' => ItemStatus::Inactive->value]);
+        $response = $this->getJson("/api/items?{$query}");
+        $response->assertOk();
+        $response->assertJsonCount($count, 'pagination.data');
     }
 
     public function test_find_an_item(): void

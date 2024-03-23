@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class Order extends BaseModel
 {
-    use BroadcastsEvents, HasFactory;
+    use BroadcastsEvents, Filterable, HasFactory;
 
     /**
      * Get the channels that model events should broadcast on.

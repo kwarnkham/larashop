@@ -36,7 +36,8 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $query = Order::query();
+        $filters = $request->only(['status']);
+        $query = Order::query()->filter($filters);
 
         return response()
             ->json(

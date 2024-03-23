@@ -43,7 +43,8 @@ class ItemController extends Controller
 
     public function index(Request $request)
     {
-        $query = Item::query();
+        $filters = $request->only(['status']);
+        $query = Item::query()->filter($filters);
 
         return response()
             ->json(
