@@ -34,12 +34,7 @@ class OrderRESTTest extends TestCase
 
     public function test_user_can_update_order_item()
     {
-        $order = Order::factory()->hasAttached(
-            Item::factory()->count(2),
-            ['quantity' => 1, 'price' => 1]
-        )->create(['user_id' => $this->user->id]);
-
-        $this->assertDatabaseCount('item_order', 2);
+        $order = Order::factory()->create(['user_id' => $this->user->id]);
 
         $items = Item::factory()->count(10)->create();
 
@@ -270,20 +265,14 @@ class OrderRESTTest extends TestCase
 
     public function test_date_filtering_orders(): void
     {
-        Order::factory()->hasAttached(
-            Item::factory()->count(2),
-            ['quantity' => 1, 'price' => 1]
-        )->for(User::factory())->create(['updated_at' => now()]);
+        Order::factory()->create(['updated_at' => now()]);
 
-        Order::factory()->hasAttached(
-            Item::factory()->count(2),
-            ['quantity' => 1, 'price' => 1]
-        )->for(User::factory())->create(['updated_at' => now()->addDay()]);
+        $b = Order::factory()->create();
 
-        Order::factory()->hasAttached(
-            Item::factory()->count(2),
-            ['quantity' => 1, 'price' => 1]
-        )->for(User::factory())->create(['updated_at' => now()->addDays(2)]);
+        $c = Order::factory()->create();
+
+        $b->updateQuietly(['updated_at' => now()->addDay()]);
+        $c->updateQuietly(['updated_at' => now()->addDays(2)]);
 
         $query = http_build_query([
             'from' => now()->subDay()->toDateString(),
